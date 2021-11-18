@@ -17,11 +17,20 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            inventory.Save();
+        }
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            inventory.Load();
+        }
+    }
+
     private void OnApplicationQuit()
     {
-        // Очень важно! Весь инвентарь - это один ScriptableObject, который автоматически
-        // всё сохраняет. И если нам это не нужно, то мы принудительно его очищаем
-        // при закрытии приложения
         inventory.Container.Clear();
     }
 }
