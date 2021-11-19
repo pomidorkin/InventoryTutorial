@@ -22,24 +22,55 @@ public class InventoryObject : ScriptableObject
     public void AddItem(Item _item, int _amoumt)
     {
         // This line of code makes items with buffs non-stackable.
-        if(_item.buffs.Length > 0)
+        if (_item.buffs.Length > 0)
         {
-            Container.Items.Add(new InventorySlot(_item.id, _item, _amoumt));
+            SetEmptySlot(_item, _amoumt);
             return;
         }
 
-        for(int i = 0; i < Container.Items.Count; i++)
+        for (int i = 0; i < Container.Items.Length; i++)
         {
-            if(Container.Items[i].item.id == _item.id)
+            if (Container.Items[i].ID == _item.id)
             {
                 Container.Items[i].AddAmount(_amoumt);
                 return; // We stop looping through the inventory
             }
         }
         // If we don't have such an item yet, we run this code
-        // Here when we add a new item to our inventory, we will use database's GetId
-        // to pull the item id and populate it into our inventory slot.
-            Container.Items.Add(new InventorySlot(_item.id, _item, _amoumt));
+        SetEmptySlot(_item, _amoumt);
+
+    }
+
+    public InventorySlot SetEmptySlot(Item _item, int _amount)
+    {
+        for (int i = 0; i < Container.Items.Length; i++)
+        {
+            if (Container.Items[i].ID <= -1)
+            {
+                Container.Items[i].UpdateSlot(_item.id, _item, _amount);
+                return Container.Items[i];
+            }
+        }
+        // Here we need to implement logic when the inventary is full
+        return null;
+    }
+
+    public void MoveItem(InventorySlot item1, InventorySlot item2)
+    {
+        InventorySlot temp = new InventorySlot(item2.ID, item2.item, item2.amout);
+        item2.UpdateSlot(item1.ID, item1.item, item1.amout);
+        item1.UpdateSlot(temp.ID, temp.item, temp.amout);
+    }
+
+    public void RemoveItem(Item _item)
+    {
+        for (int i = 0; i < Container.Items.Length; i++)
+        {
+            if(Container.Items[i].item == _item)
+            {
+                Container.Items[i].UpdateSlot(-1, null, 0);
+            }
+        }
     }
 
     [ContextMenu("Save")]
@@ -71,7 +102,11 @@ public class InventoryObject : ScriptableObject
 
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(string.Concat(Application.persistentDataPath, savePath), FileMode.Open, FileAccess.Read);
-            Container = (Inventory)formatter.Deserialize(stream);
+            Inventory newContainer = (Inventory)formatter.Deserialize(stream);
+            for (int i = 0; i < Container.Items.Length; i++)
+            {
+                Container.Items[i].UpdateSlot(newContainer.Items[i].ID, newContainer.Items[i].item, newContainer.Items[i].amout);
+            }
             stream.Close();
         }
     }
@@ -91,7 +126,7 @@ public class Inventory
     // in that slot of our inventory. So we created an Inventory slot class
     // that holds InventorySlots insted of holding items. The slots contain
     // the item an the amount of items we have in that slot~~~
-    public List<InventorySlot> Items = new List<InventorySlot>();
+    public InventorySlot[] Items = new InventorySlot[24]; // 24 is the initial size of our inventory
 
 }
 
@@ -100,11 +135,24 @@ public class Inventory
 [System.Serializable]
 public class InventorySlot
 {
-    public int ID;
+    public int ID = -1;
     public Item item;
     public int amout;
     // Conctructor setts some values when an inventory slot is created
     public InventorySlot(int _id, Item _item, int _amout)
+    {
+        ID = _id;
+        item = _item;
+        amout = _amout;
+    }
+    public InventorySlot()
+    {
+        ID = -1;
+        item = null;
+        amout = 0;
+    }
+
+    public void UpdateSlot(int _id, Item _item, int _amout)
     {
         ID = _id;
         item = _item;

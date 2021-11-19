@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class DisplayInventory : MonoBehaviour
 {
+    public MouseItem mouseItem = new MouseItem();
     public GameObject inventoryPrefab;
     // Inventory that we want to display
     public InventoryObject inventory;
@@ -17,13 +20,13 @@ public class DisplayInventory : MonoBehaviour
     public int Y_SPACE_BETWEEN_ITEMS;
     public int NUMBER_OF_COLUMNS;
     // Dictionary for the items display
-    Dictionary<InventorySlot, GameObject> itemsDisplayed = new Dictionary<InventorySlot, GameObject>();
+    Dictionary<GameObject, InventorySlot> itemsDisplayed = new Dictionary<GameObject, InventorySlot>();
 
 
     // Start is called before the first frame update
     void Start()
     {
-        CreateDisplay();
+        CreateSlots();
     }
 
 
@@ -31,24 +34,108 @@ public class DisplayInventory : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateDisplay();
+        UpdateSlots();
     }
 
-    private void CreateDisplay()
+    public void UpdateSlots()
     {
-        for (int i = 0; i < inventory.Container.Items.Count; i++)
+        foreach (KeyValuePair<GameObject, InventorySlot> _slot in itemsDisplayed)
         {
-            InventorySlot slot = inventory.Container.Items[i];
+            // Checking if the slot we are looking at has an item in in (the value will be more than 0)
+            if (_slot.Value.ID >= 0)
+            {
+                _slot.Key.transform.GetChild(0).GetComponentInChildren<Image>().sprite = inventory.database.GetItem[_slot.Value.item.id].uiDisplay;
+                // https://youtu.be/ZSdzzNiDvZk?t=1035
+                _slot.Key.transform.GetChild(0).GetComponentInChildren<Image>().color = new Color(1, 1, 1, 1);
+                _slot.Key.GetComponentInChildren<TextMeshProUGUI>().text = _slot.Value.amout == 1 ? "" : _slot.Value.amout.ToString("n0");
+            }
+            else
+            {
+                _slot.Key.transform.GetChild(0).GetComponentInChildren<Image>().sprite = null;
+                _slot.Key.transform.GetChild(0).GetComponentInChildren<Image>().color = new Color(1, 1, 1, 0);
+                _slot.Key.GetComponentInChildren<TextMeshProUGUI>().text = "";
+            }
+        }
+    }
 
+    private void CreateSlots()
+    {
+        itemsDisplayed = new Dictionary<GameObject, InventorySlot>();
+        for (int i = 0; i < inventory.Container.Items.Length; i++)
+        {
             var obj = Instantiate(inventoryPrefab, Vector3.zero, Quaternion.identity, transform);
-            obj.transform.GetChild(0).GetComponentInChildren<Image>().sprite = inventory.database.GetItem[slot.item.id].uiDisplay;
             obj.GetComponent<RectTransform>().localPosition = GetPosition(i);
-            // Now we geet to get object in child, which is TextMeshProUGUI, and set that object to the amount
-            // of that item that we have. ToString("n0") <- the argument is just for the nice formatting
-            obj.GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
-            // Adding the item that gets created to the items displayed dictionary
-            itemsDisplayed.Add(slot, obj);
 
+            AddEvent(obj, EventTriggerType.PointerEnter, delegate { OnEnter(obj); });
+            AddEvent(obj, EventTriggerType.PointerExit, delegate { OnExit(obj); });
+            AddEvent(obj, EventTriggerType.BeginDrag, delegate { OnDragStart(obj); });
+            AddEvent(obj, EventTriggerType.EndDrag, delegate { OnDragEnd(obj); });
+            AddEvent(obj, EventTriggerType.Drag, delegate { OnDrag(obj); });
+
+            // Adding objects that we've just created to the Dictionary
+            itemsDisplayed.Add(obj, inventory.Container.Items[i]);
+        }
+    }
+
+    // Funtionality for dragging inventory items...
+    private void AddEvent(GameObject obj, EventTriggerType type, UnityAction<BaseEventData> action)
+    {
+        EventTrigger trigger = obj.GetComponent<EventTrigger>();
+        // We need a new trigger to add to the event trigger
+        var eventTrigger = new EventTrigger.Entry();
+        eventTrigger.eventID = type;
+        eventTrigger.callback.AddListener(action);
+        trigger.triggers.Add(eventTrigger);
+    }
+
+    public void OnEnter(GameObject obj)
+    {
+        mouseItem.hoverObj = obj;
+        if (itemsDisplayed.ContainsKey(obj))
+        {
+            mouseItem.hoverItem = itemsDisplayed[obj];
+        }
+    }
+    public void OnExit(GameObject obj)
+    {
+
+        mouseItem.hoverObj = null;
+        mouseItem.hoverItem = null;
+    }
+    public void OnDragStart(GameObject obj)
+    {
+        var mouseObject = new GameObject();
+        var rt = mouseObject.AddComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(50, 50);
+        mouseObject.transform.SetParent(transform.parent);
+        if (itemsDisplayed[obj].ID >= 0)
+        {
+            var img = mouseObject.AddComponent<Image>();
+            img.sprite = inventory.database.GetItem[itemsDisplayed[obj].ID].uiDisplay;
+            img.raycastTarget = false;
+        }
+        mouseItem.obj = mouseObject;
+        mouseItem.item = itemsDisplayed[obj];
+    }
+    public void OnDragEnd(GameObject obj)
+    {
+        if (mouseItem.hoverObj)
+        {
+            inventory.MoveItem(itemsDisplayed[obj], itemsDisplayed[mouseItem.hoverObj]);
+
+        }
+        else
+        {
+            inventory.RemoveItem(itemsDisplayed[obj].item);
+        }
+        Destroy(mouseItem.obj);
+        mouseItem.item = null;
+    }
+    public void OnDrag(GameObject obj)
+    {
+        if (mouseItem.obj != null)
+        {
+            mouseItem.obj.GetComponent<RectTransform>().position = Input.mousePosition;
         }
     }
 
@@ -58,26 +145,12 @@ public class DisplayInventory : MonoBehaviour
         return new Vector3(X_START + (X_SPACE_BETWEEN_ITEMS * (i % NUMBER_OF_COLUMNS)), Y_START + (-Y_SPACE_BETWEEN_ITEMS * (i / NUMBER_OF_COLUMNS)), 0f);
     }
 
-    private void UpdateDisplay()
-    {
-        for (int i = 0; i < inventory.Container.Items.Count; i++)
-        {
-            InventorySlot slot = inventory.Container.Items[i];
-            // We are checking if that item is already in our inventory
-            if (itemsDisplayed.ContainsKey(slot))
-            {
-                itemsDisplayed[slot].GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
-            }
-            else
-            {
-                // Same what we did in the CreateDisplay() function
-                var obj = Instantiate(inventoryPrefab, Vector3.zero, Quaternion.identity, transform);
-                obj.transform.GetChild(0).GetComponentInChildren<Image>().sprite = inventory.database.GetItem[slot.item.id].uiDisplay;
-                obj.GetComponent<RectTransform>().localPosition = GetPosition(i);
-                obj.GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
-                itemsDisplayed.Add(slot, obj);
+}
 
-            }
-        }
-    }
+public class MouseItem
+{
+    public GameObject obj;
+    public InventorySlot item;
+    public InventorySlot hoverItem;
+    public GameObject hoverObj;
 }
