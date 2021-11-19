@@ -16,5 +16,12 @@ MonoBehaviour:
   uiDisplay: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   type: 1
   description: 
-  atkBonus: 10
-  defBonus: 0
+  buffs:
+  - attribute: 3
+    value: 0
+    min: 5
+    max: 17
+  - attribute: 0
+    value: 0
+    min: 4
+    max: 20

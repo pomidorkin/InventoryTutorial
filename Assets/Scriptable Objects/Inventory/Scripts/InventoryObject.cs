@@ -21,6 +21,13 @@ public class InventoryObject : ScriptableObject
     // This function adds items to our inventory
     public void AddItem(Item _item, int _amoumt)
     {
+        // This line of code makes items with buffs non-stackable.
+        if(_item.buffs.Length > 0)
+        {
+            Container.Items.Add(new InventorySlot(_item.id, _item, _amoumt));
+            return;
+        }
+
         for(int i = 0; i < Container.Items.Count; i++)
         {
             if(Container.Items[i].item.id == _item.id)
