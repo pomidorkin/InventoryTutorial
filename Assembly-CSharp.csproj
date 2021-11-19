@@ -58,13 +58,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\ItemObject.cs" />
     <Compile Include="Assets\Player.cs" />
-    <Compile Include="Assets\Item.cs" />
+    <Compile Include="Assets\Scriptable Objects\Items\Scripts\ItemDatabaseObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Inventory\Scripts\InventoryObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\FoodObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\EquipmentObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\DefaultObject.cs" />
     <Compile Include="Assets\DisplayInventory.cs" />
-    <Compile Include="Assets\Scriptable Objects\Items\Scripts\ItemDatabaseObject.cs" />
+    <Compile Include="Assets\GroundItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

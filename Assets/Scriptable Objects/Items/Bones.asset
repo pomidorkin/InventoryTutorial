@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4a7839f8f34a1645bbfdf875e3d8133, type: 3}
   m_Name: Bones
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4692128326770318710, guid: a8364d844c4530e41a703eb4d34c89e0, type: 3}
+  Id: 0
+  uiDisplay: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   type: 0
   description: Trash...

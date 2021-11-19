@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class DisplayInventory : MonoBehaviour
 {
+    public GameObject inventoryPrefab;
     // Inventory that we want to display
     public InventoryObject inventory;
 
@@ -24,7 +26,7 @@ public class DisplayInventory : MonoBehaviour
         CreateDisplay();
     }
 
-    
+
 
     // Update is called once per frame
     void Update()
@@ -34,15 +36,18 @@ public class DisplayInventory : MonoBehaviour
 
     private void CreateDisplay()
     {
-        for(int i = 0; i < inventory.Container.Count; i++)
+        for (int i = 0; i < inventory.Container.Items.Count; i++)
         {
-            var obj = Instantiate(inventory.Container[i].item.prefab, Vector3.zero, Quaternion.identity, transform);
+            InventorySlot slot = inventory.Container.Items[i];
+
+            var obj = Instantiate(inventoryPrefab, Vector3.zero, Quaternion.identity, transform);
+            obj.transform.GetChild(0).GetComponentInChildren<Image>().sprite = inventory.database.GetItem[slot.item.id].uiDisplay;
             obj.GetComponent<RectTransform>().localPosition = GetPosition(i);
             // Now we geet to get object in child, which is TextMeshProUGUI, and set that object to the amount
             // of that item that we have. ToString("n0") <- the argument is just for the nice formatting
-            obj.GetComponentInChildren<TextMeshProUGUI>().text = inventory.Container[i].amout.ToString("n0");
+            obj.GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
             // Adding the item that gets created to the items displayed dictionary
-            itemsDisplayed.Add(inventory.Container[i], obj);
+            itemsDisplayed.Add(slot, obj);
 
         }
     }
@@ -55,20 +60,22 @@ public class DisplayInventory : MonoBehaviour
 
     private void UpdateDisplay()
     {
-        for(int i = 0; i < inventory.Container.Count; i++)
+        for (int i = 0; i < inventory.Container.Items.Count; i++)
         {
+            InventorySlot slot = inventory.Container.Items[i];
             // We are checking if that item is already in our inventory
-            if (itemsDisplayed.ContainsKey(inventory.Container[i]))
+            if (itemsDisplayed.ContainsKey(slot))
             {
-                itemsDisplayed[inventory.Container[i]].GetComponentInChildren<TextMeshProUGUI>().text = inventory.Container[i].amout.ToString("n0");
+                itemsDisplayed[slot].GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
             }
             else
             {
                 // Same what we did in the CreateDisplay() function
-                var obj = Instantiate(inventory.Container[i].item.prefab, Vector3.zero, Quaternion.identity, transform);
+                var obj = Instantiate(inventoryPrefab, Vector3.zero, Quaternion.identity, transform);
+                obj.transform.GetChild(0).GetComponentInChildren<Image>().sprite = inventory.database.GetItem[slot.item.id].uiDisplay;
                 obj.GetComponent<RectTransform>().localPosition = GetPosition(i);
-                obj.GetComponentInChildren<TextMeshProUGUI>().text = inventory.Container[i].amout.ToString("n0");
-                itemsDisplayed.Add(inventory.Container[i], obj);
+                obj.GetComponentInChildren<TextMeshProUGUI>().text = slot.amout.ToString("n0");
+                itemsDisplayed.Add(slot, obj);
 
             }
         }
