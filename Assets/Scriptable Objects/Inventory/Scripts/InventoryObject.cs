@@ -21,9 +21,9 @@ public class InventoryObject : ScriptableObject
     // This function adds items to our inventory
     public void AddItem(Item _item, int _amoumt)
     {
-        for(int i = 0; i > Container.Items.Count; i++)
+        for(int i = 0; i < Container.Items.Count; i++)
         {
-            if(Container.Items[i].item == _item)
+            if(Container.Items[i].item.id == _item.id)
             {
                 Container.Items[i].AddAmount(_amoumt);
                 return; // We stop looping through the inventory
