@@ -114,7 +114,7 @@ public class InventoryObject : ScriptableObject
     [ContextMenu("Clear")]
     public void Clear()
     {
-        Container = new Inventory();
+        Container.Clear();
     }
 
 }
@@ -128,6 +128,14 @@ public class Inventory
     // the item an the amount of items we have in that slot~~~
     public InventorySlot[] Items = new InventorySlot[24]; // 24 is the initial size of our inventory
 
+    public void Clear()
+    {
+        for (int i = 0; i < Items.Length; i++)
+        {
+            Items[i].UpdateSlot(-1, new Item(), 0);
+        }
+    }
+
 }
 
 // We made this class serializable so that when we add this class to an object
@@ -135,6 +143,10 @@ public class Inventory
 [System.Serializable]
 public class InventorySlot
 {
+    public ItemType[] AllowedItems = new ItemType[0];
+    // "public UserInterface parent" links to the parent that this inventory slot
+    // belongs to
+    public UserInterface parent;
     public int ID = -1;
     public Item item;
     public int amout;
@@ -162,5 +174,25 @@ public class InventorySlot
     public void AddAmount(int value)
     {
         amout += value;
+    }
+
+    public bool CanPlaceInSlot(ItemObject _item)
+    {
+        if (AllowedItems.Length <= 0)
+        {
+            // if AllowedItems.Length is 0 or less, it means that any item can go in that
+            // slot without ant restrictions
+            return true;
+        }
+
+        for (int i = 0; i < AllowedItems.Length; i++)
+        {
+            if (_item.type == AllowedItems[i])
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
