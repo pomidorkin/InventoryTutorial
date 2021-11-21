@@ -1699,6 +1699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 11400000, guid: c635add7526374a47991782ff4c973a8, type: 2}
+  equipment: {fileID: 11400000, guid: a261c1aa19eacb647b26237edc3a2a7c, type: 2}
 --- !u!4 &1256139734 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 408730, guid: 7737647c22c1fc64a88d5cd030c352ce, type: 3}

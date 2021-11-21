@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public MouseItem mouseItem = new MouseItem();
 
     public InventoryObject inventory;
+    public InventoryObject equipment;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -14,8 +14,12 @@ public class Player : MonoBehaviour
         // If we were able to find an item (i.e. the 'other' might not be an item)
         if (item)
         {
-            inventory.AddItem(new Item (item.item), 1);
-            Destroy(other.gameObject);
+            Item _item = new Item(item.item);
+            if (inventory.AddItem(_item, 1))
+            {
+                Destroy(other.gameObject);
+            }
+            
         }
     }
 
@@ -24,15 +28,18 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             inventory.Save();
+            equipment.Save();
         }
         if (Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             inventory.Load();
+            equipment.Load();
         }
     }
 
     private void OnApplicationQuit()
     {
-        inventory.Container.Items = new InventorySlot[24];
+        inventory.Container.Clear();
+        equipment.Container.Clear();
     }
 }

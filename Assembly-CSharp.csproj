@@ -56,19 +56,18 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\UserInterface.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\ItemObject.cs" />
     <Compile Include="Assets\Billboard.cs" />
     <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\GroundItem.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\ItemDatabaseObject.cs" />
+    <Compile Include="Assets\StaticInterface.cs" />
+    <Compile Include="Assets\DynamicInterface.cs" />
     <Compile Include="Assets\Scriptable Objects\Inventory\Scripts\InventoryObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\FoodObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\EquipmentObject.cs" />
     <Compile Include="Assets\Scriptable Objects\Items\Scripts\DefaultObject.cs" />
-    <Compile Include="Assets\DisplayInventory.cs" />
-    <Compile Include="Assets\UserInterface.cs" />
-    <Compile Include="Assets\DynamicInterface.cs" />
-    <Compile Include="Assets\StaticInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

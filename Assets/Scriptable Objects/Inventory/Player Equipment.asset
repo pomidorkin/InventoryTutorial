@@ -17,19 +17,15 @@ MonoBehaviour:
   Container:
     Items:
     - AllowedItems: 02000000
-      parent: {fileID: 0}
-      ID: -1
       item:
         name: 
-        id: 0
+        id: -1
         buffs: []
       amout: 0
     - AllowedItems: 01000000
-      parent: {fileID: 0}
-      ID: 3
       item:
         name: Sword 2
-        id: 3
+        id: -1
         buffs:
         - attribute: 3
           value: 8
@@ -41,26 +37,20 @@ MonoBehaviour:
           max: 20
       amout: 1
     - AllowedItems: 0100000003000000
-      parent: {fileID: 0}
-      ID: -1
       item:
         name: 
         id: -1
         buffs: []
       amout: 0
     - AllowedItems: 05000000
-      parent: {fileID: 0}
-      ID: -1
       item:
         name: 
-        id: 0
+        id: -1
         buffs: []
       amout: 0
     - AllowedItems: 04000000
-      parent: {fileID: 0}
-      ID: -1
       item:
         name: 
-        id: 0
+        id: -1
         buffs: []
       amout: 0

@@ -23,13 +23,13 @@ public enum Attribute
 // This class is abstract because it is the base class, other objects will extend this class
 public abstract class ItemObject : ScriptableObject
 {
-    public int Id;
     public Sprite uiDisplay;
+    public bool stackable;
     // Store item type
     public ItemType type;
     [TextArea(15,20)]
     public string description;
-    public ItemBuff[] buffs;
+    public Item data = new Item();
 
     public Item CreateItem()
     {
@@ -42,7 +42,7 @@ public abstract class ItemObject : ScriptableObject
 public class Item
 {
     public string name;
-    public int id;
+    public int id = -1;
     public ItemBuff[] buffs;
     public Item()
     {
@@ -52,13 +52,13 @@ public class Item
         public Item(ItemObject item)
     {
         name = item.name;
-        id = item.Id;
-        buffs = new ItemBuff[item.buffs.Length];
+        id = item.data.id;
+        buffs = new ItemBuff[item.data.buffs.Length];
         for(int i = 0; i < buffs.Length; i++)
         {
-            buffs[i] = new ItemBuff(item.buffs[i].min, item.buffs[i].max)
+            buffs[i] = new ItemBuff(item.data.buffs[i].min, item.data.buffs[i].max)
             {
-                attribute = item.buffs[i].attribute
+                attribute = item.data.buffs[i].attribute
             };
         }
     }

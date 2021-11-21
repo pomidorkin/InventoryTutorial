@@ -13,7 +13,7 @@ public class StaticInterface : UserInterface
         // Making sure there is no liks between our equipment database and our equipment display
         // 1) We created a new dictionary of our items displayed, confirming that we don't have
         // an old dictionary
-        itemsDisplayed = new Dictionary<GameObject, InventorySlot>();
+        slotsOnInterface = new Dictionary<GameObject, InventorySlot>();
         // 2) We are loopoing through or equipment inside of our datebase (which is the
         // scriptable object)
         for (int i = 0; i < inventory.Container.Items.Length; i++)
@@ -30,7 +30,7 @@ public class StaticInterface : UserInterface
             AddEvent(obj, EventTriggerType.EndDrag, delegate { OnDragEnd(obj); });
             AddEvent(obj, EventTriggerType.Drag, delegate { OnDrag(obj); });
             // 5) and then add them to the actual itemsDisplayed, so they will be linked
-            itemsDisplayed.Add(obj, inventory.Container.Items[i]);
+            slotsOnInterface.Add(obj, inventory.Container.Items[i]);
         }
     }
 }
